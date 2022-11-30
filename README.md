@@ -2,8 +2,6 @@
 
 ## Description
 
-![Terraform](https://upload.wikimedia.org/wikipedia/commons/0/04/Terraform_Logo.svg)](https://www.terraform.io/)
-
 Here is a project which is an API to store some file on a server. It's a simple API developed with ASP.NET Core.
 
 You can find below the architecture designed which represent all resources used and interactions in this project
