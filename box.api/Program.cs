@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Implement Application Dependency Injection Container
-builder.Services.ImplementPersistence(builder.Configuration);
+builder.Services.ImplementPersistence(builder.Configuration, typeof(Program));
 
 builder.Services.AddHttpClient();
 

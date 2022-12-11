@@ -1,0 +1,15 @@
+version: "3.2"
+services:
+
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "cQ3Hc1Wcr4"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./database/data:/var/opt/mssql/data
+      - ./database/logs:/var/opt/mssql/log
+      - ./database/backups:/var/opt/mssql/backup

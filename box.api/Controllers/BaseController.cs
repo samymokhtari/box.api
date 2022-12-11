@@ -4,11 +4,8 @@ namespace box.api.Controllers
 {
     public class BaseController : ControllerBase
     {
-        private readonly ILogger<BaseController> _logger;
-
-        public BaseController(ILogger<BaseController> logger)
+        public BaseController()
         {
-            _logger = logger;
         }
     }
 }

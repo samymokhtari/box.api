@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "box.api", "box.api\box.api.csproj", "{54EE7023-C394-4275-A065-929835E45E35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "box.api", "box.api\box.api.csproj", "{54EE7023-C394-4275-A065-929835E45E35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "box.application", "box.application\box.application.csproj", "{43507BCE-1CEC-4888-B163-36E36C776B4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "box.application", "box.application\box.application.csproj", "{43507BCE-1CEC-4888-B163-36E36C776B4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "box.infrastructure", "box.infrastructure\box.infrastructure.csproj", "{D3693FF0-52F3-4134-B9C5-57DE50CF5B36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "box.infrastructure", "box.infrastructure\box.infrastructure.csproj", "{D3693FF0-52F3-4134-B9C5-57DE50CF5B36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

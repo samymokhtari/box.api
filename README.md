@@ -19,3 +19,11 @@ Install Docker if you want to use it. https://docs.docker.com/get-docker/
 docker build -t box .
 docker run -d -p 5000:8080 --name box box
 ```
+
+
+## Scaffolding
+
+To scaffold models with the existing database, use this command line:
+```
+Scaffold-DbContext "Server=localhost,1433;Database=box;User Id=sa;Password=cQ3Hc1Wcr4;Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Data/Entities -Force
+```
