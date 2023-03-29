@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
-namespace box.infrastructure.Data.Entities;
+namespace box.api.Data.Entities;
 
 public partial class BoxContext : DbContext
 {
@@ -21,17 +23,11 @@ public partial class BoxContext : DbContext
     {
         modelBuilder.Entity<TFile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__T_File__3213E83F41C0DD73");
+            entity.HasKey(e => e.Id).HasName("PK__T_File__3213E83F0DBA6CF0");
 
             entity.ToTable("T_File");
 
-            entity.HasIndex(e => e.Filename, "filename_UNIQUE").IsUnique();
-
-            entity.HasIndex(e => e.ProjectId, "fk_T_File_T_Project1_idx");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreateTime).HasColumnName("create_time");
             entity.Property(e => e.Filename)
                 .HasMaxLength(255)
@@ -50,13 +46,11 @@ public partial class BoxContext : DbContext
 
         modelBuilder.Entity<TProject>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__T_Projec__3213E83FBA2B637A");
+            entity.HasKey(e => e.Id).HasName("PK__T_Projec__3213E83F2C98923D");
 
             entity.ToTable("T_Project");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Code)
                 .HasMaxLength(255)
                 .HasColumnName("code");
@@ -65,5 +59,8 @@ public partial class BoxContext : DbContext
                 .HasColumnName("name");
         });
 
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

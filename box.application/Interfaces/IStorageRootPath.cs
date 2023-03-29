@@ -3,5 +3,7 @@
     public interface IStorageRootPath
     {
         string RootPath { get; }
+
+        char DirectorySeparator { get; }
     }
 }

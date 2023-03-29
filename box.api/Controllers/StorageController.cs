@@ -29,7 +29,7 @@ namespace box.api.Controllers
                 return BadRequest(ModelState);
             }
 
-            await p_Service.HandleAsync(new StorageRequest(p_Request.File, p_Request.ProjectID), _storagePresenter);
+            await p_Service.HandleAsync(new StorageRequest(p_Request.File, p_Request.Project), _storagePresenter);
 
             return _storagePresenter.ContentResult;
         }

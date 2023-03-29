@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Entities\" />
-    <Folder Include="Data\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +19,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\box.application\box.application.csproj" />
   </ItemGroup>
 
 </Project>

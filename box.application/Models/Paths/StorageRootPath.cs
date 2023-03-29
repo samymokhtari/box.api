@@ -13,6 +13,8 @@ namespace box.application.Models.Paths
     {
         public string RootPath { get; set; }
 
+        public char DirectorySeparator => Path.DirectorySeparatorChar;
+
         private const string DefaultPathWindows = "c:/box/";
         private const string DefaultPathLinux = "/box/";
 
