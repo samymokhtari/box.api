@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace box.api.Controllers
 {
     [ApiController]
-    [Route("[api/controller]")]
+    [Route("api/[controller]")]
     public class StorageController : BaseController
     {
         private readonly StoragePresenter _storagePresenter;
@@ -29,7 +29,7 @@ namespace box.api.Controllers
                 return BadRequest(ModelState);
             }
 
-            await p_Service.HandleAsync(new StorageRequest(p_Request.File), _storagePresenter);
+            await p_Service.HandleAsync(new StorageRequest(p_Request.File, p_Request.ProjectID), _storagePresenter);
 
             return _storagePresenter.ContentResult;
         }

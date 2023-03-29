@@ -12,9 +12,15 @@ namespace box.application.Models.Request
         /// </summary>
         public IFormFile File { get; set; }
 
-        public StorageRequest(IFormFile file)
+        /// <summary>
+        /// Project id
+        /// </summary>
+        public string ProjectID { get; set; }
+
+        public StorageRequest(IFormFile file, string projectID)
         {
             File = file;
+            ProjectID = projectID;
         }
     }
 }

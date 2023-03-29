@@ -22,7 +22,7 @@ namespace box.application.UseCases
         /// <returns>boolean success</returns>
         public async Task<bool> HandleAsync(StorageRequest request,IOutputPort<StorageResponse> response)
         {
-            if (request.File == null)
+            if (request.File == null || string.IsNullOrEmpty(request.ProjectID))
             {
                 response.Handle(new StorageResponse(new[] { new Error("empty_request", "Request is not valid") }));
                 return false;
