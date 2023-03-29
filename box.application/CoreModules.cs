@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using box.application.Interfaces;
+using box.application.Models.Paths;
 using box.application.UseCases;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,9 @@ namespace box.application
         {
             // Singletons
             services.AddSingleton(configuration);
+
+            // Paths
+            services.AddScoped<IStorageRootPath, StorageRootPath>();
 
             // UseCases
             services.AddScoped<IStorageUseCase, StorageUseCase>();

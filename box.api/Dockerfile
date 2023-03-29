@@ -7,7 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["box.api/box.api.csproj", "box.api/"]
+COPY ["box.api/*.csproj", "box.api/"]
+COPY ["box.application/*.csproj", "box.application/"]
+COPY ["box.infrastructure/*.csproj", "box.infrastructure/"]
+
 RUN dotnet restore "box.api/box.api.csproj"
 COPY . .
 WORKDIR "/src/box.api"

@@ -1,6 +1,6 @@
 ﻿namespace box.infrastructure.Data.Entities;
 
-public partial class TProject
+public partial class TProject : IEntity
 {
     public int Id { get; set; }
 
