@@ -70,4 +70,5 @@ void ConfigurePresenters(IServiceCollection services)
 {
     services.AddScoped<StoragePresenter, StoragePresenter>();
     services.AddScoped<ProjectPresenter, ProjectPresenter>();
+    services.AddScoped<EmptyPresenter, EmptyPresenter>();
 }

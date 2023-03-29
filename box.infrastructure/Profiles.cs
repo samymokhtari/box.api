@@ -9,7 +9,7 @@ namespace box.infrastructure
         public Profiles()
         {
             CreateMap<TFile, BoxFile>().ReverseMap();
-            CreateMap<TProject, BoxFile>().ReverseMap();
+            CreateMap<TProject, BoxProject>().ReverseMap();
         }
     }
 }

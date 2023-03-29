@@ -12,11 +12,11 @@ namespace box.infrastructure
     {
         public static IServiceCollection InfrastructurePersistence(this IServiceCollection services, IConfiguration configuration, Type program)
         {
+            services.AddDbContext<BoxContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
+
+
             // Repositories
             services.AddTransient<IProjectRepository, ProjectRepository>();
-
-            services.AddDbContext<BoxContext, BoxContext>();
-            services.AddDbContext<BoxContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
 
             // AutoMapper
             var config = new MapperConfiguration(cfg =>

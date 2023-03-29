@@ -20,10 +20,13 @@ docker build -t box .
 docker run -d -p 5000:8080 --name box box
 ```
 
+## Environment Variables
+To set a database, start a Visual Studio CLI and run this command:
+`dotnet user-secrets set "ConnectionStrings:ConnStr" "Server=SERVERADDRESS;Database=DATABASE;User ID=USERID;Password=PASSWORD;TrustServerCertificate=True;"`
 
 ## Scaffolding
 
 To scaffold models with the existing database, use this command line:
 ```
-Scaffold-DbContext "Server=localhost,1433;Database=box;User Id=sa;Password=cQ3Hc1Wcr4;Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Data/Entities -Force
+Scaffold-DbContext "Server=SERVERADDRESS;Database=DATABASE;User Id=USERID;Password=PASSWORD;Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Data/Entities -Force
 ```

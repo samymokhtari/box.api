@@ -23,6 +23,7 @@ namespace box.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddProject(
             [FromServices] IProjectUseCase useCase,
+            [FromServices] EmptyPresenter emptyPresenter,
             [FromBody] BodyProjectRequest body)
         {
             if (!ModelState.IsValid)
@@ -30,9 +31,9 @@ namespace box.api.Controllers
                 return BadRequest(ModelState);
             }
 
-            await useCase.HandleAsync(new ProjectRequest(body.ProjectName, body.ProjectCode), _projectPresenter);
+            await useCase.HandleAsync(new ProjectRequest(body.ProjectName, body.ProjectCode), emptyPresenter);
 
-            return _projectPresenter.ContentResult;
+            return emptyPresenter.ContentResult;
         }
 
         [HttpGet("{projectCode}")]
@@ -40,7 +41,7 @@ namespace box.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProject(
             [FromServices] IProjectUseCase useCase,
-            [FromServices] IOutputPort<EmptyResponse> outputPort,
+            
             [FromRoute] string projectCode)
         {
             if (!ModelState.IsValid)
@@ -48,7 +49,7 @@ namespace box.api.Controllers
                 return BadRequest(ModelState);
             }
 
-            await useCase.HandleAsync(new ProjectRequest(projectCode), outputPort);
+            await useCase.HandleAsync(new ProjectRequest(projectCode), _projectPresenter);
 
             return _projectPresenter.ContentResult;
         }
