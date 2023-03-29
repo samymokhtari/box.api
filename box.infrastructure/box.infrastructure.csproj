@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Entities\" />
-    <Folder Include="Data\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +17,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\box.application\box.application.csproj" />
   </ItemGroup>
 
 </Project>

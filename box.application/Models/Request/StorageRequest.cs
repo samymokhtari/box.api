@@ -1,7 +1,6 @@
 ﻿using box.application.Interfaces;
 using box.application.Models.Response;
 using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
 
 namespace box.application.Models.Request
 {
@@ -12,9 +11,15 @@ namespace box.application.Models.Request
         /// </summary>
         public IFormFile File { get; set; }
 
-        public StorageRequest(IFormFile file)
+        /// <summary>
+        /// Project
+        /// </summary>
+        public string Project { get; set; }
+
+        public StorageRequest(IFormFile file, string project)
         {
             File = file;
+            Project = project;
         }
     }
 }

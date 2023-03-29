@@ -1,20 +1,17 @@
 ﻿using box.application.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace box.application.Models.Paths
 {
-    internal class StorageRootPath : IStorageRootPath
+    public class StorageRootPath : IStorageRootPath
     {
-        public string RootPath { get; set; }
+        public string RootPath { get; }
+
+        public char DirectorySeparator => Path.DirectorySeparatorChar;
 
         public StorageRootPath(IConfiguration configuration)
         {
-            RootPath = configuration["StorageRootPath"];
+            RootPath = configuration["StorageRootPath"] ?? throw new ArgumentNullException("Storage Root Path can't be null");
         }
     }
 }

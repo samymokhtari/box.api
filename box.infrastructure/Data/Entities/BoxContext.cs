@@ -64,9 +64,5 @@ public partial class BoxContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("name");
         });
-
-        OnModelCreatingPartial(modelBuilder);
     }
-
-    private partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

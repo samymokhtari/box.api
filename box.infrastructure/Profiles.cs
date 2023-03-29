@@ -2,7 +2,7 @@
 using box.application.Models;
 using box.infrastructure.Data.Entities;
 
-namespace box.application
+namespace box.infrastructure
 {
     public class Profiles : Profile
     {
