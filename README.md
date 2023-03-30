@@ -22,7 +22,9 @@ docker run -d -p 5000:8080 --name box box
 
 ## Environment Variables
 To set a database, start a Visual Studio CLI and run this command:
-`dotnet user-secrets set "ConnectionStrings:ConnStr" "Server=SERVERADDRESS;Database=DATABASE;User ID=USERID;Password=PASSWORD;TrustServerCertificate=True;"`
+```
+dotnet user-secrets set "ConnectionStrings:ConnStr" "Server=SERVERADDRESS;Database=DATABASE;User ID=USERID;Password=PASSWORD;TrustServerCertificate=True;"
+```
 
 ## Scaffolding
 
