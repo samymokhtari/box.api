@@ -16,6 +16,7 @@ namespace box.infrastructure
 
 
             // Repositories
+            services.AddTransient<IStorageRepository, StorageRepository>();
             services.AddTransient<IProjectRepository, ProjectRepository>();
 
             // AutoMapper

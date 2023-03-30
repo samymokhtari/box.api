@@ -10,18 +10,23 @@ namespace box.api.Controllers
     [Route("api/[controller]")]
     public class StorageController : BaseController
     {
-        private readonly StoragePresenter _storagePresenter;
-
-        public StorageController(StoragePresenter storagePresenter) : base()
+        public StorageController() : base()
         {
-            _storagePresenter = storagePresenter;
         }
 
+        /// <summary>
+        /// Store a File
+        /// </summary>
+        /// <param name="p_Service"></param>
+        /// <param name="storagePresenter"></param>
+        /// <param name="p_Request"></param>
+        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonContentResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> StoreFile(
             [FromServices] IStorageUseCase p_Service,
+            [FromServices] StoragePresenter storagePresenter,
             [FromForm] BodyStorageRequest p_Request)
         {
             if (!ModelState.IsValid)
@@ -29,9 +34,37 @@ namespace box.api.Controllers
                 return BadRequest(ModelState);
             }
 
-            await p_Service.HandleAsync(new StorageRequest(p_Request.File, p_Request.Project), _storagePresenter);
+            await p_Service.HandleAsync(new StorageRequest(p_Request.File, p_Request.Project), storagePresenter);
 
-            return _storagePresenter.ContentResult;
+            return storagePresenter.ContentResult;
+        }
+
+        /// <summary>
+        /// Read a file
+        /// </summary>
+        /// <param name="p_Service"></param>
+        /// <param name="p_ProjectCode"></param>
+        /// <param name="storageGetPresenter"></param>
+        /// <param name="p_FileName"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetFile(
+            [FromServices] IStorageUseCase p_Service,
+            [FromQuery] string p_ProjectCode,
+            [FromServices] StorageGetPresenter storageGetPresenter,
+            [FromQuery] string p_FileName
+            )
+        {
+            if (string.IsNullOrEmpty(p_ProjectCode) || string.IsNullOrEmpty(p_FileName))
+            {
+                return BadRequest(ModelState);
+            }
+
+            await p_Service.HandleAsync(new StorageGetRequest(p_ProjectCode, p_FileName), storageGetPresenter);
+
+            return File(storageGetPresenter.ContentResult, "application/octet-stream", p_FileName);
         }
     }
 }
