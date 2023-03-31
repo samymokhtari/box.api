@@ -2,7 +2,6 @@
 using box.api.Request;
 using box.application.Interfaces;
 using box.application.Models.Request;
-using box.application.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace box.api.Controllers
@@ -41,7 +40,7 @@ namespace box.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProject(
             [FromServices] IProjectUseCase useCase,
-            
+
             [FromRoute] string projectCode)
         {
             if (!ModelState.IsValid)
