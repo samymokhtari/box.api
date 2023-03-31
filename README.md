@@ -5,7 +5,7 @@
 Here is a project which is an API to store some file on a server. It's a simple API developed with ASP.NET Core.
 
 You can find below the architecture designed which represent all resources used and interactions in this project
-[![Architecture](http://image.noelshack.com/fichiers/2022/48/3/1669835004-box.png)]
+![Architecture](docs/architecture.png?raw=true "Architecture")
 
 ## Installation
 
