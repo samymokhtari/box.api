@@ -1,6 +1,6 @@
 ﻿namespace box.application.Models
 {
-    public class BoxFile
+    public class BoxFile : IEntity
     {
         public int Id { get; set; }
 
@@ -13,5 +13,14 @@
         public DateTime? CreateTime { get; set; }
 
         public DateTime? UpdateTime { get; set; }
+
+        public BoxFile(string filename, int projectId)
+        {
+            Filename = filename;
+            ProjectId = projectId;
+            IsActive = 1;
+            CreateTime = DateTime.Now;
+            UpdateTime = DateTime.Now;
+        }
     }
 }

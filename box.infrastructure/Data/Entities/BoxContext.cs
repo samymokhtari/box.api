@@ -30,7 +30,7 @@ public partial class BoxContext : DbContext
             entity.HasIndex(e => e.ProjectId, "fk_T_File_T_Project1_idx");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.CreateTime).HasColumnName("create_time");
             entity.Property(e => e.Filename)
