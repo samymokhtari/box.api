@@ -25,18 +25,18 @@ namespace box.application.UseCases
         /// <param name="message"></param>
         /// <param name="response"></param>
         /// <returns>success or not</returns>
-        public async Task<bool> HandleAsync(ProjectRequest message, IOutputPort<ProjectResponse> response)
+        public Task<bool> HandleAsync(ProjectRequest message, IOutputPort<ProjectResponse> response)
         {
             BoxProject project = _projectRepository.GetByCode(message.ProjectCode);
             
             if (project == null)
             {
                 response.Handle(new ProjectResponse(new[] { new Error("bad_request", "Project not found") }));
-                return false;
+                return Task.FromResult(false);
             }
 
             response.Handle(new ProjectResponse(project, true, project.Name));
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>
