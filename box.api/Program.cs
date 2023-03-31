@@ -1,24 +1,59 @@
 using AspNetCoreRateLimit;
+using box.api.Middleware;
 using box.api.Presenters;
 using box.application;
 using box.infrastructure;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Box",
+        Description = "An ASP.NET Core Web API for managing files for multiple projects",
+        Contact = new OpenApiContact
+        {
+            Name = "Samy Mokhtari",
+            Url = new Uri("https://github.com/samymokhtari")
+        }
+    });
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme()
+    {
+        In = ParameterLocation.Header,
+        Name = "x-api-key", //header with api key
+        Type = SecuritySchemeType.ApiKey,
+        Description = "The API Key to access the API",
+        Scheme = "ApiKeyScheme"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference 
+                { 
+                    Type = ReferenceType.SecurityScheme, 
+                    Id = "ApiKey" 
+                },
+                In = ParameterLocation.Header
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 // Configure Rate limit
 ConfigureRateLimit(builder.Services, builder.Configuration);
 
 // Implement differents layers of Dependency Injections
 ConfigurePresenters(builder.Services);
-builder.Services.InfrastructurePersistence(builder.Configuration, typeof(Program));  ;
+builder.Services.InfrastructurePersistence(builder.Configuration, typeof(Program)); ;
 builder.Services.ApplicationPersistance(builder.Configuration);
 
 builder.Services.AddHttpClient();
@@ -36,12 +71,13 @@ app.UseIpRateLimiting();
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ApiKeyMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
-
 
 /// <summary>
 /// Configure Rate Limit

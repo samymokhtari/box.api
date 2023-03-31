@@ -5,7 +5,7 @@ namespace box.application.Persistance
     public interface IProjectRepository
     {
         Task AddAsync(BoxProject project);
-        new BoxProject GetById(int id);
+        BoxProject GetById(int id);
 
         BoxProject GetByCode(string code);
 

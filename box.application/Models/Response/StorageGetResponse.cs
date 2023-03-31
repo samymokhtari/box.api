@@ -8,6 +8,7 @@
         public StorageGetResponse(IEnumerable<Error> errors, bool success = false, string message = "") : base(success, message)
         {
             Errors = errors;
+            FileStream = new ByteArrayContent(Array.Empty<byte>());
         }
 
         public StorageGetResponse(ByteArrayContent file, bool success = true, string message = "") : base(success, message)

@@ -26,6 +26,11 @@ To set a database, start a Visual Studio CLI and run this command:
 dotnet user-secrets set "ConnectionStrings:ConnStr" "Server=SERVERADDRESS;Database=DATABASE;User ID=USERID;Password=PASSWORD;TrustServerCertificate=True;"
 ```
 
+To set an API Key to secure the app, run this:
+```
+dotnet user-secrets set "X-API-KEY" "API_KEY_VALUE_HERE"
+```
+
 ## Scaffolding
 
 To scaffold models with the existing database, use this command line:
