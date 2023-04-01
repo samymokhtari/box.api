@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [main, develop]
 
-env:
-  DOTNET_VERSION: "6.0.x"
-
 jobs:
   ci:
     name: ci-${{matrix.os}}
@@ -15,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        dotnet: ["6.0.x"]
     steps:
       # Checks out the source code at the latest commit
       - uses: actions/checkout@v3
@@ -22,13 +20,14 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: ${{ matrix.dotnet }}
+
       # Installs any NuGet packages required.
       - name: Install dependencies
         run: dotnet restore
       # Builds the project
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore /p:NetCoreBuild=true
       # Runs any tests in the project
       - name: Test
-        run: dotnet test --verbosity normal
+        run: dotnet test --verbosity normal /p:NetCoreBuild=true

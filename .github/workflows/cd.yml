@@ -1,0 +1,44 @@
+name: cd-api
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOTNET_VERSION: "6.0.x"
+  GITHUB_SHA: ${{ github.sha }}
+
+# permissions to write, build and push the docker image
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+
+jobs:
+  deployement:
+    name: "Deployement"
+    environment: production
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Put env vars into a file
+      - name: Create a env file for the api dockerfile
+        run: |
+          echo "ConnStr=${{ secrets.CONN_STR }}" > .env
+          echo "ApiKey=${{ secrets.API_KEY }}" >> .env
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the box api Docker image
+        run: |
+          docker build -f box.api/Dockerfile --tag ghcr.io/samymokhtari/box:latest .
+          docker push ghcr.io/samymokhtari/box:latest
