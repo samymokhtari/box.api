@@ -10,10 +10,16 @@ namespace box.infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection InfrastructurePersistence(this IServiceCollection services, IConfiguration configuration, Type program)
+        public static IServiceCollection InfrastructurePersistence(this IServiceCollection services, IConfiguration configuration, Type program, bool isDevelopment)
         {
-            services.AddDbContext<BoxContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
-
+            if (isDevelopment)
+            {
+                services.AddDbContext<BoxContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
+            }
+            else
+            {
+                services.AddDbContext<BoxContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("ConnStr")));
+            }
 
             // Repositories
             services.AddTransient<IStorageRepository, StorageRepository>();

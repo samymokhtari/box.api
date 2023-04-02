@@ -53,7 +53,7 @@ ConfigureRateLimit(builder.Services, builder.Configuration);
 
 // Implement differents layers of Dependency Injections
 ConfigurePresenters(builder.Services);
-builder.Services.InfrastructurePersistence(builder.Configuration, typeof(Program)); ;
+builder.Services.InfrastructurePersistence(builder.Configuration, typeof(Program), builder.Environment.IsDevelopment());
 builder.Services.ApplicationPersistance(builder.Configuration);
 
 builder.Services.AddHttpClient();

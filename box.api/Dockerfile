@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["box.api/*.csproj", "box.api/"]
 COPY ["box.application/*.csproj", "box.application/"]
 COPY ["box.infrastructure/*.csproj", "box.infrastructure/"]
+COPY ["box.database/*.sqlproj", "box.database/"]
 
 RUN dotnet restore "box.api/box.api.csproj"
 COPY . .
@@ -21,5 +22,12 @@ RUN dotnet publish "box.api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+
+ARG ConnStr=ConnStrNotSet
+ARG ApiKey=KEY
+
+ENV ConnStr=${ConnStr}
+ENV X-API-KEY=${ApiKey}
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "box.api.dll"]
