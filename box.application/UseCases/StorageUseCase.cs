@@ -13,6 +13,8 @@ namespace box.application.UseCases
         private IStorageRootPath StorageRootPath { get; }
         private IProjectRepository ProjectRepository { get; }
         private IStorageRepository StorageRepository { get; }
+        private readonly string[] EXTENSION_ALLOWED = { ".jpg", ".png", ".bmp", ".pdf", ".doc", ".docx", ".txt", ".xlsx", ".csv" };
+        private readonly int MAX_FILESIZE = 30000000; // In bytes
 
         public StorageUseCase(IConfiguration configuration, IStorageRootPath storageRootPath, IProjectRepository projectRepository, IStorageRepository storageRepository) : base(configuration)
         {
@@ -28,9 +30,19 @@ namespace box.application.UseCases
         /// <returns>boolean success</returns>
         public async Task<bool> HandleAsync(StorageRequest request, IOutputPort<StorageResponse> response)
         {
+            // Check if inputs required are presents
             if (request.File == null || string.IsNullOrEmpty(request.ProjectCode))
             {
-                response.Handle(new StorageResponse(new[] { new Error("empty_request", "Request is not valid") }));
+                response.Handle(new StorageResponse(new[] { new Error("empty_request", "File and project code are mandatory") }));
+                return false;
+            }
+
+            // Check extensions and file size
+            if(!EXTENSION_ALLOWED.Contains(Path.GetExtension(request.File.FileName)) || request.File.Length > MAX_FILESIZE)
+            {
+                response.Handle(new StorageResponse(new[] { new Error("bad_request", 
+                    $"File size must be inferior than {MAX_FILESIZE} Mo.\n" +
+                    $"Extensions allowed are : {string.Join(' ', EXTENSION_ALLOWED)}") }));
                 return false;
             }
 

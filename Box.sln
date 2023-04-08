@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "box.infrastructure", "box.i
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "box.database", "box.database\box.database.sqlproj", "{8978E43F-8821-45C4-A92A-70A6FDB2A593}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{23036C00-99C2-42DC-A70B-9F1893D531D4}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
