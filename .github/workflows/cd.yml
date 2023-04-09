@@ -40,5 +40,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the box api Docker image
         run: |
-          docker build -f box.api/Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64 --tag ghcr.io/samymokhtari/box:latest .
+          docker build -f box.api/Dockerfile --platform linux/arm/v7 --tag ghcr.io/samymokhtari/box:latest .
           docker push ghcr.io/samymokhtari/box:latest
