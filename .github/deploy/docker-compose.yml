@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql/
+    networks:
+      - default
+
+  api:
+    image: ${CONTAINER_REGISTRY}/box:latest
+    environment:
+      - ConnStr="Server=database,1433;Database=box;User ID=sa;Password=Password123;TrustServerCertificate=True;"
+    ports:
+      - "443:443"
+    volumes:
+      - box-data:/box/
+    depends_on:
+      - database
+    networks:
+      - default
+
+volumes:
+  mssql-data:
+    driver: local
+  box-data:
+    driver: local
+
+networks:
+  default:
+    name: box-network
