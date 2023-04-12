@@ -23,7 +23,7 @@ RUN dotnet publish "box.api.csproj" -c Release --runtime linux-arm -o /app/publi
 
 
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0.15-alpine3.17-arm32v7 AS final
+FROM mcr.microsoft.com/dotnet/runtime:6.0.0-focal-arm32v7 AS final
 WORKDIR /app
 
 EXPOSE 80
