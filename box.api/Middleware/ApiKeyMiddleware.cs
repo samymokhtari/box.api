@@ -28,9 +28,18 @@ namespace box.api.Middleware
                 return;
             }
 
+            // Get env API KEY configured
+            string apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeySectionName) ?? Environment.GetEnvironmentVariable(AuthConstants.ApiKeySectionName) ?? string.Empty;
+
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await context.Response.WriteAsync("API Key not configured");
+                return;
+            }
+
             // Compare
-            string apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeySectionName);
-            if(!string.IsNullOrEmpty(apiKey) && !apiKey.Equals(extractedApiKey.ToString()))
+            if (!apiKey.Equals(extractedApiKey.ToString()))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsync("Invalid API Key");
