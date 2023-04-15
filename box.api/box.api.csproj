@@ -23,5 +23,8 @@
     <ProjectReference Include="..\box.application\box.application.csproj" />
     <ProjectReference Include="..\box.infrastructure\box.infrastructure.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
 
 </Project>
