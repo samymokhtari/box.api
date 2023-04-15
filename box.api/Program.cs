@@ -65,11 +65,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    //Here bc no domain to setup https for now
+    app.UseHttpsRedirection();
 }
 
 app.UseIpRateLimiting();
-
-app.UseHttpsRedirection();
 
 app.UseMiddleware<ApiKeyMiddleware>();
 

@@ -27,11 +27,11 @@ FROM mcr.microsoft.com/dotnet/runtime:6.0.0-focal-arm32v7 AS final
 WORKDIR /app
 
 EXPOSE 443
+EXPOSE 80
 
 ARG ConnStr=ConnStrNotSet
 ARG ApiKey=KEY
-ENV ASPNETCORE_URLS=https://+:443
-ENV ASPNETCORE_HTTPS_PORT=443
+ENV ASPNETCORE_URLS=https://+:80
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ConnStr=${ConnStr}
 ENV X-API-KEY=${ApiKey}
