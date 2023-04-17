@@ -11,20 +11,32 @@ services:
     volumes:
       - mssql-data:/var/opt/mssql/
     networks:
-      - default
+      - nginx-network
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    networks:
+      - nginx-network
 
   api:
     image: ${CONTAINER_REGISTRY}/box:latest
     environment:
       - ConnStr="Server=database,1433;Database=box;User ID=sa;Password=Password123;TrustServerCertificate=True;"
-    ports:
-      - "443:443"
+    expose:
+      - "5000"
     volumes:
       - box-data:/box/
     depends_on:
       - database
     networks:
-      - default
+      - nginx-network
 
 volumes:
   mssql-data:
@@ -33,5 +45,5 @@ volumes:
     driver: local
 
 networks:
-  default:
-    name: box-network
+  nginx-network:
+    driver: bridge
