@@ -17,15 +17,14 @@ RUN dotnet publish "box.api.csproj" -c Release --runtime linux-arm -o /app/publi
 
 
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0.16-jammy-arm32v7 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.16-alpine3.17-arm32v7 AS final
 WORKDIR /app
 
-EXPOSE 443
-EXPOSE 80
+EXPOSE 5000
 
 ARG ConnStr=ConnStrNotSet
 ARG ApiKey=KEY
-ENV ASPNETCORE_URLS=https://+:80
+ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENV ConnStr=${ConnStr}

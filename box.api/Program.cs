@@ -63,12 +63,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     //Here bc no domain to setup https for now
     app.UseHttpsRedirection();
 }
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseIpRateLimiting();
 
 app.UseMiddleware<ApiKeyMiddleware>();
