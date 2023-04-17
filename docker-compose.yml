@@ -1,8 +1,7 @@
 version: "3.2"
 services:
-
-  mssql:
-    container_name: mssql
+  database:
+    container_name: database
     image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "1433:1433"
@@ -13,3 +12,28 @@ services:
       - ./database/data:/var/opt/mssql/data
       - ./database/logs:/var/opt/mssql/log
       - ./database/backups:/var/opt/mssql/backup
+    networks:
+      - box-network
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./box.api/Dockerfile
+    ports:
+      - "5001:5001"
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+      - X-API-KEY=1234567890
+      - ConnStr=Server=database;Database=box;User=sa;Password=cQ3Hc1Wcr4;TrustServerCertificate=True;
+    volumes:
+      - ./files:/box/
+    networks:
+      - box-network
+
+networks:
+  box-network:
+    name: box-network

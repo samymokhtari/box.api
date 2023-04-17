@@ -1,14 +1,9 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.15-bullseye-slim-arm32v7 AS base
-WORKDIR /app
-
-
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
 
 WORKDIR /src
+
 COPY ["box.api/*.csproj", "box.api/"]
 COPY ["box.application/*.csproj", "box.application/"]
 COPY ["box.infrastructure/*.csproj", "box.infrastructure/"]
@@ -23,8 +18,11 @@ RUN dotnet publish "box.api.csproj" -c Release -o /app/publish
 
 
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.16-alpine3.17-amd64 AS final
+
 WORKDIR /app
+
+RUN apk add --no-cache icu-libs
 
 EXPOSE 80
 EXPOSE 443
@@ -32,9 +30,9 @@ EXPOSE 443
 ARG ConnStr=ConnStrNotSet
 ARG ApiKey=KEY
 
-
 ENV ASPNETCORE_URLS=http://*:5001
 ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ENV ConnStr=${ConnStr}
 ENV X-API-KEY=${ApiKey}
 

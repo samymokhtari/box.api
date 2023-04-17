@@ -12,14 +12,9 @@ namespace box.infrastructure
     {
         public static IServiceCollection InfrastructurePersistence(this IServiceCollection services, IConfiguration configuration, Type program, bool isDevelopment)
         {
-            if (isDevelopment)
-            {
-                services.AddDbContext<BoxContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
-            }
-            else
-            {
-                services.AddDbContext<BoxContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("ConnStr")));
-            }
+            string connStr = Environment.GetEnvironmentVariable("ConnStr") ?? configuration.GetConnectionString("ConnStr") ?? string.Empty;
+            Console.WriteLine($"Connection String : {connStr}");
+            services.AddDbContext<BoxContext>(options => options.UseSqlServer(connStr));
 
             // Repositories
             services.AddTransient<IStorageRepository, StorageRepository>();
