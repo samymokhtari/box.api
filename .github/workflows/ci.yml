@@ -61,8 +61,9 @@ jobs:
           dotnet build --configuration Release --no-restore /p:NetCoreBuild=true
           dotnet test --verbosity normal /p:NetCoreBuild=true
           ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-  docker_build:
-    name: docker-${{matrix.os}}
+
+  docker_build_production:
+    name: docker-${{matrix.os}}-production
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -70,6 +71,19 @@ jobs:
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
-      - name: Build the box api Docker image
+      - name: Build the box api Docker production image
         run: |
           docker build -f box.api/Dockerfile.prod --tag ghcr.io/samymokhtari/box:latest .
+
+  docker_build_development:
+    name: docker-${{matrix.os}}-development
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the box api Docker development image
+        run: |
+          docker build -f box.api/Dockerfile --tag ghcr.io/samymokhtari/box:latest .
