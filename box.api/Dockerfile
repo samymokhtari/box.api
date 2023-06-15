@@ -10,6 +10,8 @@ COPY ["box.infrastructure/*.csproj", "box.infrastructure/"]
 COPY ["box.database/*.sqlproj", "box.database/"]
 
 RUN dotnet restore "box.api/box.api.csproj"
+RUN dotnet restore "box.application/box.application.csproj"
+RUN dotnet restore "box.infrastructure/box.infrastructure.csproj"
 
 COPY . .
 WORKDIR "/src/box.api"
