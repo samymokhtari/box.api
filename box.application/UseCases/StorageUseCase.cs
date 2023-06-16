@@ -5,6 +5,7 @@ using box.application.Models.Request;
 using box.application.Models.Response;
 using box.application.Persistance;
 using Microsoft.Extensions.Configuration;
+using NLog;
 
 namespace box.application.UseCases
 {
@@ -16,7 +17,8 @@ namespace box.application.UseCases
         private readonly string[] EXTENSION_ALLOWED = { ".jpg", ".png", ".bmp", ".pdf", ".doc", ".docx", ".txt", ".xlsx", ".csv" };
         private readonly int MAX_FILESIZE = 30000000; // In bytes
 
-        public StorageUseCase(IConfiguration configuration, IStorageRootPath storageRootPath, IProjectRepository projectRepository, IStorageRepository storageRepository) : base(configuration)
+        public StorageUseCase(IConfiguration configuration, IStorageRootPath storageRootPath, IProjectRepository projectRepository, IStorageRepository storageRepository, Logger logger) 
+            : base(configuration, logger)
         {
             StorageRootPath = storageRootPath;
             ProjectRepository = projectRepository;
@@ -30,9 +32,12 @@ namespace box.application.UseCases
         /// <returns>boolean success</returns>
         public async Task<bool> HandleAsync(StorageRequest request, IOutputPort<StorageResponse> response)
         {
+            Logger.Info($"Request to store a file for project : {request.ProjectCode} ; Filename : {request.File.FileName}");
+
             // Check if inputs required are presents
             if (request.File == null || string.IsNullOrEmpty(request.ProjectCode))
             {
+                Logger.Warn($"Request to store a file for project failed : {request.ProjectCode} ; Filename : {(request.File != null ? request.File.FileName : "No file")}");
                 response.Handle(new StorageResponse(new[] { new Error("empty_request", "File and project code are mandatory") }));
                 return false;
             }
@@ -40,6 +45,8 @@ namespace box.application.UseCases
             // Check extensions and file size
             if(!EXTENSION_ALLOWED.Contains(Path.GetExtension(request.File.FileName)) || request.File.Length > MAX_FILESIZE)
             {
+                Logger.Warn($"Request to store a file for project failed : {request.ProjectCode} ; Filesize : {request.File.Length} ; File extension : {Path.GetExtension(request.File.FileName)}");
+
                 response.Handle(new StorageResponse(new[] { new Error("bad_request", 
                     $"File size must be inferior than {MAX_FILESIZE} Mo.\n" +
                     $"Extensions allowed are : {string.Join(' ', EXTENSION_ALLOWED)}") }));
@@ -50,7 +57,9 @@ namespace box.application.UseCases
             BoxProject project = ProjectRepository.GetByCode(request.ProjectCode);
             if (project == null)
             {
-                response.Handle(new StorageResponse(new[] { new Error("bad_request", "Project not found") }));
+                Logger.Warn($"Request to store a file for project failed because no project {request.ProjectCode} found");
+
+               response.Handle(new StorageResponse(new[] { new Error("bad_request", "Project not found") }));
                 return false;
             }
 
@@ -75,9 +84,13 @@ namespace box.application.UseCases
                 await Task.WhenAll(saveImageTask, processTask);
             }catch(Exception ex)
             {
+                Logger.Fatal($"Request to store a file for project failed : {request.ProjectCode} ; Filesize : {request.File.Length} ; File extension : {Path.GetExtension(request.File.FileName)}");
+
                 response.Handle(new StorageResponse(new[] { new Error("error_while_adding_file", ex.Message) }));
                 return false;
             }
+
+            Logger.Info($"Request to store a file for project succeded : {request.ProjectCode} ;Filename : {request.File.FileName}");
 
             response.Handle(new StorageResponse(fileName, true, $"File Added Successfuly on project {request.ProjectCode}"));
             return true;
@@ -94,6 +107,8 @@ namespace box.application.UseCases
             // Check inputs
             if (string.IsNullOrEmpty(request.FileName) || string.IsNullOrEmpty(request.ProjectCode))
             {
+                Logger.Warn($"Request to get a file for project failed : {request.ProjectCode} ; Filename : {request.FileName}");
+
                 response.Handle(new StorageGetResponse(new[] { new Error("empty_request", "Request is not valid") }));
                 return Task.FromResult(false);
             }
@@ -102,6 +117,8 @@ namespace box.application.UseCases
             BoxProject project = ProjectRepository.GetByCode(request.ProjectCode);
             if (project == null)
             {
+                Logger.Warn($"Request to get a file for project failed because no project {request.ProjectCode} found");
+
                 response.Handle(new StorageGetResponse(new[] { new Error("bad_request", "Project not found") }));
                 return Task.FromResult(false);
             }
@@ -109,6 +126,8 @@ namespace box.application.UseCases
             // Check if file exists, 404 else
             if (StorageRepository.GetByName(request.FileName, project.Id) == null)
             {
+                Logger.Warn($"Request to get a file for project failed : {request.ProjectCode} ; Filename : {request.FileName} not found");
+
                 response.Handle(new StorageGetResponse(new[] { new Error("bad_request", "File not found") }));
                 return Task.FromResult(false);
             }
@@ -121,9 +140,12 @@ namespace box.application.UseCases
                 byteArrayContent = new ByteArrayContent(System.IO.File.ReadAllBytes(path));
             }catch(Exception ex)
             {
+                Logger.Fatal($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; Error while reading file");
+
                 response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", ex.Message) }));
                 return Task.FromResult(false);
             }
+            Logger.Info($"Request to get a file for project succeded : {request.ProjectCode} ; Path : {path}");
 
             response.Handle(new StorageGetResponse(byteArrayContent, true, $"File {request.FileName} read successfully"));
             return Task.FromResult(true);
