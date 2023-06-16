@@ -4,6 +4,8 @@ using box.api.Presenters;
 using box.application;
 using box.infrastructure;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Sinks.Fluentd;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,9 +58,17 @@ ConfigurePresenters(builder.Services);
 builder.Services.InfrastructurePersistence(builder.Configuration, typeof(Program), builder.Environment.IsDevelopment());
 builder.Services.ApplicationPersistance(builder.Configuration);
 
+// Logging
+// Use Serilog as the logging provider
+builder.Host.UseSerilog((hostContext, services, configuration) => {
+    configuration.WriteTo.Fluentd("fluent-bit", 24224);
+});
+
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

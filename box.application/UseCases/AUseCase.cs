@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using NLog;
 
 namespace box.application.UseCases
 {
@@ -6,9 +7,12 @@ namespace box.application.UseCases
     {
         public IConfiguration Configuration { get; }
 
-        public AUseCase(IConfiguration configuration)
+        public Logger Logger { get; }
+
+        protected AUseCase(IConfiguration configuration, Logger logger)
         {
             Configuration = configuration;
+            Logger = logger;
         }
     }
 }

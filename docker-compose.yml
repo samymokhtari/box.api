@@ -1,4 +1,7 @@
-version: "3.2"
+version: "3.8"
+
+name: box
+
 services:
   database:
     container_name: database
@@ -13,7 +16,20 @@ services:
       - ./database/logs:/var/opt/mssql/log
       - ./database/backups:/var/opt/mssql/backup
     networks:
-      - box-network
+      - nginx-network
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - 80:80
+    restart: always
+    volumes:
+      - ./.github/deploy/nginx/nginx.dev.conf:/etc/nginx/nginx.conf/:ro
+    depends_on:
+      - api
+      - fluent-bit
+    networks:
+      - nginx-network
 
   api:
     container_name: api
@@ -21,19 +37,65 @@ services:
       context: .
       dockerfile: ./box.api/Dockerfile
     ports:
-      - "5001:5001"
+      - "5000:5000"
     depends_on:
       - database
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5001
+      - ASPNETCORE_URLS=http://+:5000
       - X-API-KEY=1234567890
       - ConnStr=Server=database;Database=box;User=sa;Password=cQ3Hc1Wcr4;TrustServerCertificate=True;
     volumes:
       - ./files:/box/
     networks:
-      - box-network
+      - nginx-network
+
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:latest
+    container_name: fluent-bit
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./.github/deploy/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      - nginx-network
+
+  promtail:
+    image: grafana/promtail:2.6.1
+    volumes:
+      # custom config will read logs from the containers of
+      # this project
+      - ./.github/deploy/loki/promtail-config.yml:/etc/promtail/config.yml
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    networks:
+      - nginx-network
+    depends_on:
+      - fluent-bit
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3900:3000"
+    volumes:
+      # directory must be created first, with uid:gid 472:472
+      - ./volumes/grafana:/var/lib/grafana
+      # automatically configure the loki datasource
+      - ./.github/deploy/loki/grafana/provisioning/:/etc/grafana/provisioning/
+    depends_on:
+      - loki
+    environment:
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+      GF_LOG_FILTERS: rendering:debug
+    networks:
+      - nginx-network
 
 networks:
-  box-network:
-    name: box-network
+  nginx-network:
+    name: nginx-network
