@@ -43,7 +43,7 @@ services:
     environment:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./.github/deploy/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
     ports:
       - "24224:24224"
       - "24224:24224/udp"
@@ -55,7 +55,7 @@ services:
     volumes:
       # custom config will read logs from the containers of
       # this project
-      - ./loki/promtail-config.yml:/etc/promtail/config.yml
+      - ./.github/deploy/loki/promtail-config.yml:/etc/promtail/config.yml
 
   loki:
     image: grafana/loki:latest
@@ -73,7 +73,7 @@ services:
       # directory must be created first, with uid:gid 472:472
       - ./volumes/grafana:/var/lib/grafana
       # automatically configure the loki datasource
-      - ./loki/grafana/provisioning/:/etc/grafana/provisioning/
+      - ./.github/deploy/loki/grafana/provisioning/:/etc/grafana/provisioning/
     depends_on:
       - loki
     environment:

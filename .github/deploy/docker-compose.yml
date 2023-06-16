@@ -52,6 +52,52 @@ services:
     networks:
       - nginx-network
 
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:latest
+    container_name: fluent-bit
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      - nginx-network
+
+  promtail:
+    image: grafana/promtail:2.6.1
+    volumes:
+      # custom config will read logs from the containers of
+      # this project
+      - ./loki/promtail-config.yml:/etc/promtail/config.yml
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    networks:
+      - nginx-network
+    depends_on:
+      - fluent-bit
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3900:3000"
+    volumes:
+      # directory must be created first, with uid:gid 472:472
+      - ./volumes/grafana:/var/lib/grafana
+      # automatically configure the loki datasource
+      - ./loki/grafana/provisioning/:/etc/grafana/provisioning/
+    depends_on:
+      - loki
+    environment:
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+      GF_LOG_FILTERS: rendering:debug
+    networks:
+      - nginx-network
+
 volumes:
   mssql-data:
     driver: local
