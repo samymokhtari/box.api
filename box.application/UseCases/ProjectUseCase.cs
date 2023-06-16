@@ -20,18 +20,18 @@ namespace box.application.UseCases
         /// <summary>
         /// Get a project
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="request"></param>
         /// <param name="response"></param>
         /// <returns>success or not</returns>
-        public Task<bool> HandleAsync(ProjectRequest message, IOutputPort<ProjectResponse> response)
+        public Task<bool> HandleAsync(ProjectRequest request, IOutputPort<ProjectResponse> response)
         {
-            Logger.Info($"Get a projet by the code : {message.ProjectCode}");
+            Logger.Info($"Get a projet by the code : {request.ProjectCode}");
 
-            BoxProject project = _projectRepository.GetByCode(message.ProjectCode);
+            BoxProject project = _projectRepository.GetByCode(request.ProjectCode);
 
             if (project == null)
             {
-                Logger.Error($"Failed to get following project : {message.ProjectCode}");
+                Logger.Error($"Failed to get following project : {request.ProjectCode}");
 
                 response.Handle(new ProjectResponse(new[] { new Error("bad_request", "Project not found") }));
                 return Task.FromResult(false);
@@ -44,25 +44,25 @@ namespace box.application.UseCases
         /// <summary>
         /// Add a project
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="request"></param>
         /// <param name="response"></param>
         /// <returns>success or not</returns>
-        public async Task<bool> HandleAsync(ProjectRequest message, IOutputPort<EmptyResponse> response)
+        public async Task<bool> HandleAsync(ProjectRequest request, IOutputPort<EmptyResponse> response)
         {
-            Logger.Info($"Post project with following informations : {message.ProjectCode} ; {message.ProjectName}");
+            Logger.Info($"Post project with following informations : {request.ProjectCode} ; {request.ProjectName}");
 
-            if (message == null || string.IsNullOrEmpty(message.ProjectName) || string.IsNullOrEmpty(message.ProjectCode))
+            if (string.IsNullOrEmpty(request.ProjectName) || string.IsNullOrEmpty(request.ProjectCode))
             {
-                Logger.Error($"Failed to add following project : {message.ProjectCode} ; {message.ProjectName}");
+                Logger.Error($"Failed to add following project : {request.ProjectCode} ; {request.ProjectName}");
 
                 response.Handle(new EmptyResponse(new[] { new Error("bad_request", "Parameters are mandatory") }));
                 return false;
             }
 
             await _projectRepository.AddAsync(new BoxProject(
-                message.ProjectName, message.ProjectCode));
+                request.ProjectName, request.ProjectCode));
 
-            Logger.Info($"New project added : {message.ProjectCode} ; {message.ProjectName}");
+            Logger.Info($"New project added : {request.ProjectCode} ; {request.ProjectName}");
 
             response.Handle(new EmptyResponse());
             return true;

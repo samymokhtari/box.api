@@ -9,7 +9,7 @@ namespace box.application.UseCases
 
         public Logger Logger { get; }
 
-        public AUseCase(IConfiguration configuration, Logger logger)
+        protected AUseCase(IConfiguration configuration, Logger logger)
         {
             Configuration = configuration;
             Logger = logger;
