@@ -6,6 +6,7 @@ using box.application.Models.Response;
 using box.application.Persistance;
 using Microsoft.Extensions.Configuration;
 using NLog;
+using System.IO;
 
 namespace box.application.UseCases
 {
@@ -135,19 +136,30 @@ namespace box.application.UseCases
             string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{StorageRootPath.DirectorySeparator}{request.FileName}";
 
             ByteArrayContent byteArrayContent;
+            Stream stream;
+            byte[] byteArray;
             try
             {
-                byteArrayContent = new ByteArrayContent(System.IO.File.ReadAllBytes(path));
-            }catch(Exception ex)
+                byteArray = System.IO.File.ReadAllBytes(path);
+                if(byteArray.Length == 0)
+                {
+                    Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; File doesn't exists");
+
+                    response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", "File doesn't exists") }));
+                    return Task.FromResult(false);
+                }
+                stream = new MemoryStream(byteArray);
+            }
+            catch (Exception ex)
             {
-                Logger.Fatal($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; Error while reading file");
+                Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; Error while reading file");
 
                 response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", ex.Message) }));
                 return Task.FromResult(false);
             }
             Logger.Info($"Request to get a file for project succeded : {request.ProjectCode} ; Path : {path}");
-
-            response.Handle(new StorageGetResponse(byteArrayContent, true, $"File {request.FileName} read successfully"));
+            
+            response.Handle(new StorageGetResponse(byteArray, true, $"File {request.FileName} read successfully"));
             return Task.FromResult(true);
         }
     }

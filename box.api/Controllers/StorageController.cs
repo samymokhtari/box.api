@@ -3,6 +3,7 @@ using box.api.Request;
 using box.application.Interfaces;
 using box.application.Models.Request;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace box.api.Controllers
 {
@@ -63,6 +64,11 @@ namespace box.api.Controllers
             }
 
             await p_Service.HandleAsync(new StorageGetRequest(p_ProjectCode, p_FileName), storageGetPresenter);
+            if(storageGetPresenter.StatusCode != (int)HttpStatusCode.OK)
+            {
+                this.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return storageGetPresenter.ContentResultJson;
+            }
 
             return File(storageGetPresenter.ContentResult, "application/octet-stream", p_FileName);
         }
