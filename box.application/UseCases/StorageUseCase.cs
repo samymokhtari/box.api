@@ -135,8 +135,6 @@ namespace box.application.UseCases
 
             string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{StorageRootPath.DirectorySeparator}{request.FileName}";
 
-            ByteArrayContent byteArrayContent;
-            Stream stream;
             byte[] byteArray;
             try
             {
@@ -148,7 +146,6 @@ namespace box.application.UseCases
                     response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", "File doesn't exists") }));
                     return Task.FromResult(false);
                 }
-                stream = new MemoryStream(byteArray);
             }
             catch (Exception ex)
             {

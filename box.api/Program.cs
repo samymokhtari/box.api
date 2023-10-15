@@ -67,9 +67,10 @@ builder.Host.UseSerilog((hostContext, services, configuration) => {
 builder.Services.AddHttpClient();
 
 /* CORS */
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
@@ -91,10 +92,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseIpRateLimiting();
 
+/* Middleware */
 app.UseMiddleware<ApiKeyMiddleware>();
-
-app.UseAuthorization();
-
+app.UseCors(MyAllowSpecificOrigins);
 app.MapControllers();
 
 app.Run();

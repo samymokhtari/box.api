@@ -1,13 +1,16 @@
+using box.api.ActionFilters;
 using box.api.Presenters;
 using box.api.Request;
 using box.application.Interfaces;
 using box.application.Models.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace box.api.Controllers
 {
-    [ApiController]
+    [CORSActionFilter]
+
     [Route("api/[controller]")]
     public class StorageController : BaseController
     {
