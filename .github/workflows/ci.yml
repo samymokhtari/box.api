@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p ./.sonar/scanner
-          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner --version 5.14.0
 
       # Installs the .NET SDK on the build machine
       - name: Setup .NET
