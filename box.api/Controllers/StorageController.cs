@@ -7,7 +7,7 @@ using System.Net;
 
 namespace box.api.Controllers
 {
-
+    [ApiController]
     [Route("api/[controller]")]
     public class StorageController : BaseController
     {
