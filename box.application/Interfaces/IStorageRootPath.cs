@@ -4,6 +4,6 @@
     {
         string RootPath { get; }
 
-        char DirectorySeparator { get; }
+        static char DirectorySeparator { get; }
     }
 }

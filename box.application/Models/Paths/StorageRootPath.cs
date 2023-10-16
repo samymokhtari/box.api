@@ -13,21 +13,13 @@ namespace box.application.Models.Paths
     {
         public string RootPath { get; set; }
 
-        public char DirectorySeparator => Path.DirectorySeparatorChar;
+        public static char DirectorySeparator => Path.DirectorySeparatorChar;
 
-        private const string DefaultPathWindows = "c:/box/";
-        private const string DefaultPathLinux = "/box/";
+        private const string DefaultFolderName = $"box";
 
         private static string GetDefaultRootPath()
         {
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return DefaultPathWindows;
-            }   
-            else
-            {
-                return DefaultPathLinux;
-            }
+                return $"{Path.GetPathRoot(Environment.SystemDirectory)}{DirectorySeparator}{DefaultFolderName}";
         }
 
         public StorageRootPath(IConfiguration configuration)
