@@ -4,6 +4,6 @@
     {
         string RootPath { get; }
 
-        static char DirectorySeparator { get; }
+        static char DirectorySeparator { get; } = Path.AltDirectorySeparatorChar;
     }
 }
