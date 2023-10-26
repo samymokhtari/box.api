@@ -1,11 +1,5 @@
 ﻿using box.application.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace box.application.Models.Paths
 {
@@ -13,7 +7,7 @@ namespace box.application.Models.Paths
     {
         public string RootPath { get; set; }
 
-        public static char DirectorySeparator => Path.DirectorySeparatorChar;
+        public static char DirectorySeparator => Path.AltDirectorySeparatorChar;
 
         private const string DefaultFolderName = $"box";
 

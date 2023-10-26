@@ -7,6 +7,7 @@ using box.application.Persistance;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using System.IO;
+using System.Net.Mime;
 
 namespace box.application.UseCases
 {
@@ -135,10 +136,11 @@ namespace box.application.UseCases
 
             string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}{request.FileName}";
 
-            byte[] byteArray;
+            MyFile file;
             try
             {
-                byteArray = System.IO.File.ReadAllBytes(path);
+                byte[] byteArray = System.IO.File.ReadAllBytes(path);
+                file = new(Path.GetFileName(path), byteArray);
                 if(byteArray.Length == 0)
                 {
                     Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; File doesn't exists");
@@ -156,7 +158,7 @@ namespace box.application.UseCases
             }
             Logger.Info($"Request to get a file for project succeded : {request.ProjectCode} ; Path : {path}");
             
-            response.Handle(new StorageGetResponse(byteArray, true, $"File {request.FileName} read successfully"));
+            response.Handle(new StorageGetResponse(file, true, $"File {request.FileName} read successfully"));
             return Task.FromResult(true);
         }
     }

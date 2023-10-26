@@ -70,7 +70,7 @@ namespace box.api.Controllers
                 return storageGetPresenter.ContentResultJson;
             }
 
-            return File(storageGetPresenter.ContentResult, "application/octet-stream", p_FileName);
+            return File(storageGetPresenter.ContentResult.Content, storageGetPresenter.ContentResult.GetMimeTypeForFileExtension(), p_FileName) ;
         }
     }
 }
