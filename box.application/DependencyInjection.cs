@@ -5,6 +5,7 @@ using box.application.UseCases;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using NLog.Web;
 
 namespace box.application
 {
@@ -27,19 +28,10 @@ namespace box.application
             services.AddScoped<IProjectUseCase, ProjectUseCase>();
 
             // Logging
-            var config = new NLog.Config.LoggingConfiguration();
-            var fluentdTarget = new NLog.Targets.Fluentd();
-
-            fluentdTarget.Layout = new NLog.Layouts.SimpleLayout("${longdate}|${level}|${callsite}|${logger}|${message}");
-            fluentdTarget.Host = "fluent-bit";
-            fluentdTarget.Port = 24224;
-            fluentdTarget.Tag = "hdfs.nlog.test";
-            config.AddTarget("fluentd", fluentdTarget);
-            config.LoggingRules.Add(new NLog.Config.LoggingRule("box", LogLevel.Debug, fluentdTarget));
-            var loggerFactory = new LogFactory(config);
-            var logger = loggerFactory.GetLogger("box");
-            logger.Info("Application Starting...");
-
+            var logger = LogManager.Setup()
+                .LoadConfigurationFromAppSettings()
+                .GetCurrentClassLogger();
+            logger.Debug("Application starting...");
             services.AddSingleton(logger);
 
             return services;

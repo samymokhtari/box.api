@@ -26,17 +26,11 @@ WORKDIR /app
 
 RUN apk add --no-cache icu-libs
 
-EXPOSE 80
-EXPOSE 443
-
-ARG ConnStr=ConnStrNotSet
-ARG ApiKey=KEY
-
-ENV ASPNETCORE_URLS=http://*:5001
+ENV ASPNETCORE_URLS=http://*:8080
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-ENV ConnStr=${ConnStr}
-ENV X-API-KEY=${ApiKey}
+#ENV ConnStr=${ConnStr}
+#ENV X-API-KEY=${ApiKey}
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "box.api.dll"]

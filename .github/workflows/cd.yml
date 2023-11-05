@@ -4,10 +4,6 @@ on:
   push:
     branches: [main]
 
-env:
-  DOTNET_VERSION: "6.0.x"
-  GITHUB_SHA: ${{ github.sha }}
-
 # permissions to write, build and push the docker image
 permissions:
   contents: read
@@ -15,30 +11,49 @@ permissions:
   deployments: write
 
 jobs:
-  deployement:
-    name: "Deployement"
-    environment: production
+  build_push:
     runs-on: ubuntu-latest
+    name: 'Docker Deployement Cloud Run'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     defaults:
       run:
         shell: bash
-
+    environment: production
+    env:
+      DOTNET_VERSION: "6.0.x"
+      environment: production
+      location: europe-west1
+      GITHUB_SHA: ${{ github.sha }}
+      service_name: box-api
+      app_name: box
     steps:
-      - uses: actions/checkout@v3
-
-      # Put env vars into a file
-      - name: Create a env file for the api dockerfile
-        run: |
-          echo "ConnStr=${{ secrets.CONN_STR }}" > .env
-          echo "ApiKey=${{ secrets.API_KEY }}" >> .env
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+      - uses: actions/checkout@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+      - name: Configure docker
+        run: |
+          gcloud auth configure-docker ${{ env.location }}-docker.pkg.dev
+
       - name: Build the box api Docker image
         run: |
-          docker build -f box.api/Dockerfile.prod --tag ghcr.io/samymokhtari/box:latest .
-          docker push ghcr.io/samymokhtari/box:latest
+          docker build -f box.api/Dockerfile.prod --tag ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }} .
+          docker push ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }}
+
+      - name: 'Deploy Cloud Run'
+        run: |
+          gcloud run deploy ${{ env.service_name }} \
+          --image ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }}
+          --platform managed \
+          --region ${{ env.location }} \
+          --allow-unauthenticated \
+          --cpu 1 \
+          --max-instances 3 \
+          --memory 512M \
+          --no-use-http2 \
+          --set-env-vars X-API-KEY=${{ secrets.API_KEY }} \
+          --set-env-vars ConnStr=${{ secrets.CONN_STR }}
