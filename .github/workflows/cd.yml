@@ -62,5 +62,5 @@ jobs:
           --max-instances 3 \
           --memory 512M \
           --no-use-http2 \
-          --set-env-vars X-API-KEY=${{ secrets.API_KEY }} \
+          --set-env-vars "X-API-KEY"=${{ secrets.API_KEY }} \
           --set-env-vars ConnStr=${{ secrets.CONN_STR }}
