@@ -5,7 +5,6 @@ using box.application;
 using box.infrastructure;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Sinks.Fluentd;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,10 +59,6 @@ builder.Services.ApplicationPersistance(builder.Configuration);
 
 // Logging
 // Use Serilog as the logging provider
-builder.Host.UseSerilog((hostContext, services, configuration) => {
-    configuration.WriteTo.Fluentd("fluent-bit", 24224);
-});
-
 builder.Services.AddHttpClient();
 
 /* CORS */
