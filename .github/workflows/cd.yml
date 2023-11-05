@@ -47,13 +47,13 @@ jobs:
 
       - name: Build the box api Docker image
         run: |
-          docker build -f box.api/Dockerfile --tag ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }} .
-          docker push ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }}
+          docker build -f box.api/Dockerfile --tag ghcr.io/samymokhtari/box.api:${{ env.GITHUB_SHA }} .
+          docker push ghcr.io/samymokhtari/box.api:${{ env.GITHUB_SHA }}
 
       - name: 'Deploy Cloud Run'
         run: |
           gcloud run deploy ${{ env.service_name }} \
-          --image ghcr.io/samymokhtari/box:${{ env.GITHUB_SHA }}
+          --image ghcr.io/samymokhtari/box.api:${{ env.GITHUB_SHA }}
           --platform managed \
           --region ${{ env.location }} \
           --allow-unauthenticated \
