@@ -24,7 +24,7 @@
                 }
 
                 // Get env API KEY configured
-                string apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeySectionName) ?? Environment.GetEnvironmentVariable(AuthConstants.ApiKeySectionName) ?? string.Empty;
+                string apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeyEnvironmentVariable) ?? Environment.GetEnvironmentVariable(AuthConstants.ApiKeyEnvironmentVariable) ?? string.Empty;
 
                 if (string.IsNullOrEmpty(apiKey))
                 {

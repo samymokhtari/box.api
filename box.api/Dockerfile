@@ -30,7 +30,7 @@ ENV ASPNETCORE_URLS=http://*:8080
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 #ENV ConnStr=${ConnStr}
-#ENV X-API-KEY=${ApiKey}
+#ENV API_KEY=${ApiKey}
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "box.api.dll"]
