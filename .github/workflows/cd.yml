@@ -54,7 +54,7 @@ jobs:
       - name: 'Deploy Cloud Run'
         run: |
           gcloud run deploy ${{ env.service_name }} \
-          --image ghcr.io/samymokhtari/box.api:${{ env.GITHUB_SHA }}
+          --image ghcr.io/samymokhtari/box.api:${{ env.GITHUB_SHA }} \
           --platform managed \
           --region ${{ env.location }} \
           --allow-unauthenticated \
