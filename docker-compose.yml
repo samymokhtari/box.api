@@ -5,6 +5,7 @@ name: box
 services:
   database:
     container_name: database
+    user: root
     image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "1433:1433"
@@ -30,7 +31,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
-      - X-API-KEY=1234567890
+      - API_KEY=1234567890
       - ConnStr=Server=database;Database=box;User=sa;Password=cQ3Hc1Wcr4;TrustServerCertificate=True;
     volumes:
       - ./files:/box/

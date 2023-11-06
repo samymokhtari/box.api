@@ -68,4 +68,5 @@ jobs:
           --memory 512M \
           --no-use-http2 \
           --set-env-vars API_KEY=${{ secrets.API_KEY }} \
-          --set-env-vars ConnStr=${{ secrets.CONN_STR }}
+          --set-env-vars ConnStr=${{ secrets.CONN_STR }} \
+          --set-env-vars GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_STRING }}

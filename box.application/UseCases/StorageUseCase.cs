@@ -4,6 +4,8 @@ using box.application.Models;
 using box.application.Models.Request;
 using box.application.Models.Response;
 using box.application.Persistance;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using System.IO;
@@ -16,15 +18,22 @@ namespace box.application.UseCases
         private IStorageRootPath StorageRootPath { get; }
         private IProjectRepository ProjectRepository { get; }
         private IStorageRepository StorageRepository { get; }
+        private GoogleCloudStorageUseCase GoogleCloudStorageUseCase { get; }
         private readonly string[] EXTENSION_ALLOWED = { ".jpg", ".png", ".bmp", ".pdf", ".doc", ".docx", ".txt", ".xlsx", ".csv" };
         private readonly int MAX_FILESIZE = 30000000; // In bytes
 
-        public StorageUseCase(IConfiguration configuration, IStorageRootPath storageRootPath, IProjectRepository projectRepository, IStorageRepository storageRepository, Logger logger) 
+        public StorageUseCase(IConfiguration configuration, 
+            IStorageRootPath storageRootPath, 
+            IProjectRepository projectRepository,
+            IStorageRepository storageRepository,
+            GoogleCloudStorageUseCase googleUseCase,
+            Logger logger) 
             : base(configuration, logger)
         {
             StorageRootPath = storageRootPath;
             ProjectRepository = projectRepository;
             StorageRepository = storageRepository;
+            GoogleCloudStorageUseCase = googleUseCase;
         }
 
         /// <summary>
@@ -66,25 +75,41 @@ namespace box.application.UseCases
             }
 
             // Store on disk
-            string fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(request.File.FileName)}";
-            string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}";
+            //string fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(request.File.FileName)}";
+            //string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}";
 
-            // Create Path if doesn't exists
-            System.IO.Directory.CreateDirectory(path);
+            //// Create Path if doesn't exists
+            //System.IO.Directory.CreateDirectory(path);
 
-            path += fileName;
+            //path += fileName;
 
-            Task saveImageTask = System.IO.File.WriteAllBytesAsync(path, request.File.GetByteArray());
+            //Task saveImageTask = System.IO.File.WriteAllBytesAsync(path, request.File.GetByteArray());
 
-            // Store in database
-            Task processTask = StorageRepository.AddAsync(new BoxFile(fileName, project.Id));
+            //// Store in database
+            //Task processTask = StorageRepository.AddAsync(new BoxFile(fileName, project.Id));
+
+
 
 
             // Asynchronously wait for both tasks to complete.
+            //try
+            //{
+            //    await Task.WhenAll(saveImageTask, processTask);
+            //}catch(Exception ex)
+            //{
+            //    Logger.Fatal($"Request to store a file for project failed : {request.ProjectCode} ; Filesize : {request.File.Length} ; File extension : {Path.GetExtension(request.File.FileName)}");
+
+            //    response.Handle(new StorageResponse(new[] { new Error("error_while_adding_file", ex.Message) }));
+            //    return false;
+            //}
+
+            // Store on cloud
+            string fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(request.File.FileName)}";
             try
             {
-                await Task.WhenAll(saveImageTask, processTask);
-            }catch(Exception ex)
+                await GoogleCloudStorageUseCase.UploadFileAsync(new MemoryStream(request.File.GetByteArray()), fileName);
+            }
+            catch (Exception ex)
             {
                 Logger.Fatal($"Request to store a file for project failed : {request.ProjectCode} ; Filesize : {request.File.Length} ; File extension : {Path.GetExtension(request.File.FileName)}");
 
@@ -104,7 +129,7 @@ namespace box.application.UseCases
         /// <param name="message"></param>
         /// <param name="outputPort"></param>
         /// <returns>boolean success</returns>
-        public Task<bool> HandleAsync(StorageGetRequest request, IOutputPort<StorageGetResponse> response)
+        public async Task<bool> HandleAsync(StorageGetRequest request, IOutputPort<StorageGetResponse> response)
         {
             // Check inputs
             if (string.IsNullOrEmpty(request.FileName) || string.IsNullOrEmpty(request.ProjectCode))
@@ -112,7 +137,7 @@ namespace box.application.UseCases
                 Logger.Warn($"Request to get a file for project failed : {request.ProjectCode} ; Filename : {request.FileName}");
 
                 response.Handle(new StorageGetResponse(new[] { new Error("empty_request", "Request is not valid") }));
-                return Task.FromResult(false);
+                return false;
             }
 
             // Check if project exists, 404 else
@@ -122,7 +147,7 @@ namespace box.application.UseCases
                 Logger.Warn($"Request to get a file for project failed because no project {request.ProjectCode} found");
 
                 response.Handle(new StorageGetResponse(new[] { new Error("bad_request", "Project not found") }));
-                return Task.FromResult(false);
+                return false;
             }
 
             // Check if file exists, 404 else
@@ -131,35 +156,50 @@ namespace box.application.UseCases
                 Logger.Warn($"Request to get a file for project failed : {request.ProjectCode} ; Filename : {request.FileName} not found");
 
                 response.Handle(new StorageGetResponse(new[] { new Error("bad_request", "File not found") }));
-                return Task.FromResult(false);
+                return (false);
             }
 
             string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}{request.FileName}";
 
             MyFile file;
+
+            // Get on Disk
+            //try
+            //{
+            //    byte[] byteArray = System.IO.File.ReadAllBytes(path);
+            //    file = new(Path.GetFileName(path), byteArray);
+            //    if(byteArray.Length == 0)
+            //    {
+            //        Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; File doesn't exists");
+
+            //        response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", "File doesn't exists") }));
+            //        return Task.FromResult(false);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; Error while reading file");
+
+            //    response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", ex.Message) }));
+            //    return Task.FromResult(false);
+            //}
+
+            // Get on Cloud
             try
             {
-                byte[] byteArray = System.IO.File.ReadAllBytes(path);
-                file = new(Path.GetFileName(path), byteArray);
-                if(byteArray.Length == 0)
-                {
-                    Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; File doesn't exists");
-
-                    response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", "File doesn't exists") }));
-                    return Task.FromResult(false);
-                }
+                string link = await GoogleCloudStorageUseCase.GetFileAsync(request.FileName);
+                response.Handle(new StorageGetResponse(link, true, $"File {request.FileName} read successfully"));
             }
             catch (Exception ex)
             {
                 Logger.Error($"Request to get a file for project failed : {request.ProjectCode} ; Path : {path} ; Error while reading file");
 
                 response.Handle(new StorageGetResponse(new[] { new Error("error_while_reading_file", ex.Message) }));
-                return Task.FromResult(false);
+                return false;
             }
             Logger.Info($"Request to get a file for project succeded : {request.ProjectCode} ; Path : {path}");
             
-            response.Handle(new StorageGetResponse(file, true, $"File {request.FileName} read successfully"));
-            return Task.FromResult(true);
+            return true;
         }
     }
 }
