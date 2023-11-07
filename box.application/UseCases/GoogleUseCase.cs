@@ -23,21 +23,23 @@ namespace box.application.UseCases
 
         public GoogleCloudStorageUseCase(IConfiguration configuration, Logger logger) : base(configuration, logger)
         {
-            var GoogleCredentials = Environment.GetEnvironmentVariable(ENV_GCP_KEY_NAME) ?? configuration.GetValue<string>(ENV_GCP_KEY_NAME);
-            if (string.IsNullOrEmpty(GoogleCredentials)) throw new ArgumentException("Google Credentials not found");
-            var cr = JsonConvert.DeserializeObject<GoogleCredentialServiceAccount>(GoogleCredentials);
-            var jsonString = JsonConvert.SerializeObject(cr, Formatting.None);
-            string pathCred;
-            if(Environment.GetEnvironmentVariable("ENV") == "production")
+            var gcpSecret = configuration.GetValue<string>(ENV_GCP_KEY_NAME);
+            if (!string.IsNullOrEmpty(gcpSecret))
             {
-                pathCred = "/tmp/temp.json";
+                var cr = JsonConvert.DeserializeObject<GoogleCredentialServiceAccount>(gcpSecret);
+                var jsonString = JsonConvert.SerializeObject(cr, Formatting.None);
+                googleCredential = GoogleCredential.FromJson(jsonString);
+            }
+            else if (Environment.GetEnvironmentVariable("ENV") == "production")
+            {
+                logger.Info("Use Default Auth GCP Internal Service");
+                googleCredential = GoogleCredential.GetApplicationDefault(); // Default Auth GCP Service
             }
             else
             {
-                pathCred = @$"{new StorageRootPath(configuration).RootPath}temp.json";
+                throw new ArgumentException("Google Credentials not found");
             }
-            File.WriteAllText(pathCred, jsonString);
-            googleCredential = GoogleCredential.FromFile(pathCred);
+            
             urlSigner = UrlSigner.FromCredential(googleCredential);
             storageClient = StorageClient.Create(googleCredential);
             bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? "box-files";

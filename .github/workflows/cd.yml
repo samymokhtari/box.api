@@ -67,6 +67,7 @@ jobs:
           --max-instances 3 \
           --memory 512M \
           --no-use-http2 \
-          --set-env-vars API_KEY=${{ secrets.API_KEY }} \
-          --set-env-vars ConnStr=${{ secrets.CONN_STR }} \
-          --set-env-vars GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_STRING }}
+          --vpc-connector=${{ vars.vpc_name }} \
+          --set-env-vars "^##^API_KEY=${{ secrets.API_KEY }}" \
+          --update-secrets=ConnStr=CONN_STR:latest \
+          --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=GCP_CREDENTIALS:latest
