@@ -26,6 +26,7 @@ namespace box.application
             // UseCases
             services.AddScoped<IStorageUseCase, StorageUseCase>();
             services.AddScoped<IProjectUseCase, ProjectUseCase>();
+            services.AddScoped<GoogleCloudStorageUseCase>();
 
             // Logging
             var logger = LogManager.Setup()

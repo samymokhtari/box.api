@@ -1,3 +1,4 @@
+using AspNetCore.Proxy;
 using box.api.Presenters;
 using box.api.Request;
 using box.application.Interfaces;
@@ -51,7 +52,7 @@ namespace box.api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetFile(
+        public async Task GetFile(
             [FromServices] IStorageUseCase p_Service,
             [FromQuery] string p_ProjectCode,
             [FromServices] StorageGetPresenter storageGetPresenter,
@@ -60,17 +61,18 @@ namespace box.api.Controllers
         {
             if (string.IsNullOrEmpty(p_ProjectCode) || string.IsNullOrEmpty(p_FileName))
             {
-                return BadRequest(ModelState);
+                await Response.WriteAsJsonAsync(BadRequest(ModelState));
             }
 
             await p_Service.HandleAsync(new StorageGetRequest(p_ProjectCode, p_FileName), storageGetPresenter);
             if(storageGetPresenter.StatusCode != (int)HttpStatusCode.OK)
             {
                 this.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return storageGetPresenter.ContentResultJson;
+                await Response.WriteAsJsonAsync(storageGetPresenter.ContentResultJson);
             }
 
-            return File(storageGetPresenter.ContentResult.Content, storageGetPresenter.ContentResult.GetMimeTypeForFileExtension(), p_FileName) ;
+            //return File(storageGetPresenter.ContentResult.Content, storageGetPresenter.ContentResult.GetMimeTypeForFileExtension(), p_FileName) ;
+            await this.HttpProxyAsync(storageGetPresenter.ContentResult) ;
         }
     }
 }
