@@ -13,7 +13,8 @@ namespace box.application.Models.Paths
 
         private static string GetDefaultRootPath()
         {
-                return $"{Path.GetPathRoot(Environment.SystemDirectory)}{DirectorySeparator}{DefaultFolderName}";
+            Console.WriteLine($"{Path.GetPathRoot(Environment.SystemDirectory)}{DirectorySeparator}{DefaultFolderName}");
+            return $"{Path.GetPathRoot(Environment.SystemDirectory)}{DirectorySeparator}{DefaultFolderName}";
         }
 
         public StorageRootPath(IConfiguration configuration)
