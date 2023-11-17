@@ -15,7 +15,6 @@ RUN dotnet restore "box.infrastructure/box.infrastructure.csproj"
 
 COPY . .
 WORKDIR "/src/box.api"
-#RUN dotnet build "box.api.csproj" -c Release -o /app/build
 RUN dotnet publish "box.api.csproj" -c Release -o /app/publish
 
 
@@ -27,10 +26,8 @@ WORKDIR /app
 RUN apk add --no-cache icu-libs
 
 ENV ASPNETCORE_URLS=http://*:8080
-ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-#ENV ConnStr=${ConnStr}
-#ENV API_KEY=${ApiKey}
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "box.api.dll"]
