@@ -83,6 +83,7 @@ if (app.Environment.IsDevelopment())
     //Here bc no domain to setup https for now
     app.UseHttpsRedirection();
 }
+app.UsePathBase("/box");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseIpRateLimiting();
