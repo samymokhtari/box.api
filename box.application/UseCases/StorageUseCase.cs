@@ -67,7 +67,7 @@ namespace box.application.UseCases
 
             // Store on disk
             string fileName = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(request.File.FileName)}";
-            string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}";
+            string path = @$"{StorageRootPath.RootPath}{IStorageRootPath.DirectorySeparator}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}";
 
             // Create Path if doesn't exists
             System.IO.Directory.CreateDirectory(path);

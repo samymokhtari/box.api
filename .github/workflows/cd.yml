@@ -65,4 +65,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             echo Starting Docker Compose...
-            cd ${{ env.FULLPATH }} && sudo docker compose up -d
+            cd ${{ env.FULLPATH }}
+            sudo docker compose up -d api
+            sudo docker compose restart api
+
