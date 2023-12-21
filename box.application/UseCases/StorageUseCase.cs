@@ -134,7 +134,7 @@ namespace box.application.UseCases
                 return Task.FromResult(false);
             }
 
-            string path = @$"{StorageRootPath.RootPath}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}{request.FileName}";
+            string path = @$"{StorageRootPath.RootPath}{IStorageRootPath.DirectorySeparator}{request.ProjectCode}{IStorageRootPath.DirectorySeparator}{request.FileName}";
 
             MyFile file;
             try
